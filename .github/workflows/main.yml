@@ -20,7 +20,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
@@ -29,7 +29,7 @@ jobs:
         run: |
           mkdir kerneldriver
           mv ./code/*.h ./code/*.c ./code/Makefile kerneldriver/
-          
+        
       - name: Install repo tool
         run: |
           sudo curl -L https://storage.googleapis.com/git-repo-downloads/repo -o /usr/local/bin/repo
@@ -59,8 +59,8 @@ jobs:
           
           awk -i inplace -v module="$MODULE_NAME" '
             BEGIN { added=0 }
-            /_COMMON_GKI_MODULES_LIST = \[/ { in_list=1 }
-            in_list && /\]/ {
+            /_COMMON_GKI_MODULES_LIST = / { in_list=1 }
+            in_list && // {
               if (!added) {
                 print "    \"" module "\","
                 added=1
@@ -75,7 +75,7 @@ jobs:
             }
             { print }
           ' common/modules.bzl
-          
+
       - name: Prepare module list for legacy builds
         if: ${{ github.event.inputs.android_version <= 13 }}
         run: |
@@ -102,7 +102,7 @@ jobs:
             echo "$symbol" >> common/android/abi_gki_${{ github.event.inputs.target_arch }}
           done
           sed -i '/EXPORT_SYMBOL(unregister_kprobe);/a EXPORT_SYMBOL(register_kprobe);' common/kernel/kprobes.c
-          
+
       - name: Build kernel module
         run: |
           cd android-kernel
@@ -116,9 +116,10 @@ jobs:
           fi
           echo "OUTPUT_PATH=$OUTPUT_PATH" >> $GITHUB_ENV
         continue-on-error: true
-      
-      - name: Upload only compiled driver artifact
+
+      - name: Upload kernel driver artifact
         uses: actions/upload-artifact@v4.6.2
         with:
           name: kernel-driver-${{ github.event.inputs.target_arch }}
-          path: android-kernel/${{ env.OUTPUT_PATH }}/drivers/kerneldriver/${{ github.event.inputs.driver_name }}
+          path: |
+            android-kernel/${{ env.OUTPUT_PATH }}/drivers/kerneldriver/${{ github.event.inputs.driver_name }}
