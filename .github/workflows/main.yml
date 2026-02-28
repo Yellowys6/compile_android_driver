@@ -122,4 +122,4 @@ jobs:
         with:
           name: kernel-driver-${{ github.event.inputs.target_arch }}
           path: |
-            android-kernel/${{ env.OUTPUT_PATH }}/drivers/kerneldriver/${{ github.event.inputs.driver_name }}
+            android-kernel${{ env.OUTPUT_PATH }}/drivers/kerneldriver/${{ github.event.inputs.driver_name }}
