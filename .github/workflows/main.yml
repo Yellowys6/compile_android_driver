@@ -122,7 +122,7 @@ jobs:
           cd android-kernel
           mkdir -p out
           # 只保存编译后的驱动模块，修改路径只保留需要上传的目录
-          cp -r ${OUTPUT_PATH}/bazel-bin/common/kernel_aarch64/* out/
+          cp -r /bazel-bin/common/kernel_aarch64/* out/
           
       - name: 上传内核源码和编译后的驱动
         uses: actions/upload-artifact@v4.6.2
